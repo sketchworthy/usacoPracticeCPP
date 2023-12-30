@@ -10,7 +10,8 @@
  * keeping track of cluster id of each node as u go.
  * then at the end we can just see if cluster ids match.
  * what this code does is try to dfs out the cluster based on same-end edges,
- * then check if another node is connected to curr cluster
+ * then check if another node is connected to curr cluster. has some dp elements
+ * since i keep track of which nodes are in which clusters
  * 
  * difficulty: implementation seemed actually pretty ez using floodfill, i even came up 
  * w the idea myself. unfortunately my first draft failed all test cases except sample -_-
@@ -25,20 +26,18 @@ using ll = long long;
 const int MAXN=1e5+1;
 char farms[MAXN];
 vector<vector<int>> adj;
+int cid[MAXN]; // cid[x]: cluster ID of node x
+int currCid=0;
 
-bool dfs(int node, int parent, int target){ 
-    // dfs(start, -1, end) returns true if start and end share a cow along all of route
-    if(node==target) return true;
-
+void dfs(int node, int parent){ // fill all of this cluster w dfs
+    cid[node]=currCid;
+    
     for(int nbor:adj[node]){
         if(nbor==parent) continue;
         if(farms[node]==farms[nbor]){
-            if(dfs(nbor,node,target)){
-                return true;
-            }
+            dfs(nbor,node);
         }
     }
-    return false;
 }
 
 int main() {
@@ -71,8 +70,12 @@ int main() {
         prefs[fren]=cow;
     }
 
+    
+
     for(int j=0;j<n;j++){
-        if(farms[friends[j][0]]!=prefs[j] && dfs(friends[j][0],-1,friends[j][1])){
+        currCid++;
+        dfs(friends[j][0],-1);
+        if(farms[friends[j][0]]!=prefs[j] && cid[friends[j][0]]==cid[friends[j][1]]){
             cout<<0;
         }
         else cout<<1;
