@@ -24,18 +24,18 @@ using namespace std;
 using ll = long long;
 
 const int MAXN=1e5+1;
-char farms[MAXN];
 vector<vector<int>> adj;
+char farms[MAXN];
 int cid[MAXN]; // cid[x]: cluster ID of node x
 int currCid=0;
 
-void dfs(int node, int parent){ // fill all of this cluster w dfs
-    cid[node]=currCid;
+void dfs(int node){ // fill all of this cluster w dfs
+    if(cid[node]==0) cid[node]=currCid;
+    else return;
     
     for(int nbor:adj[node]){
-        if(nbor==parent) continue;
-        if(farms[node]==farms[nbor]){
-            dfs(nbor,node);
+        if(cid[nbor]==0 && farms[node]==farms[nbor]){
+            dfs(nbor);
         }
     }
 }
@@ -49,7 +49,6 @@ int main() {
     int n,m; // n farms/nodes, m friends/test cases
     cin>>n>>m;
     cin>>farms; // read in string to char arr
-
     adj.resize(n); // edges linking farms and whether they are true (identical cows at ends) or false
     for(int j=0;j<n-1;j++){
         int a,b; cin>>a>>b;
@@ -74,7 +73,7 @@ int main() {
 
     for(int j=0;j<n;j++){
         currCid++;
-        dfs(friends[j][0],-1);
+        dfs(friends[j][0]);
         if(farms[friends[j][0]]!=prefs[j] && cid[friends[j][0]]==cid[friends[j][1]]){
             cout<<0;
         }
