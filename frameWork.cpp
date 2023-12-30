@@ -14,8 +14,8 @@ using ll = long long;
 int main() {
 	ios_base::sync_with_stdio(false);
     
-    freopen("x.in", "r", stdin);
-    freopen("x.out", "w", stdout);
+	ifstream cin("x.in");
+	ofstream cout("x.out");
     
 	int n;
     cin>>n;
