@@ -16,7 +16,9 @@
  * difficulty: implementation seemed actually pretty ez using floodfill, i even came up 
  * w the idea myself. unfortunately my first draft failed all test cases except sample -_-
  * edit: i suspect one of the reasons my code failed all test cases was that i had
- * ints in char form which prob didnt mesh well
+ * ints in char form which prob didnt mesh well. one of the big reasons program was
+ * failing a lot on time was bc i didnt get visited array to work properly, which
+ * i fixed by using cid[] arr. another error was bc i put n instead of m on a for loop :/
  * 
  */
 #include <bits/stdc++.h>
@@ -71,7 +73,7 @@ int main() {
 
     
 
-    for(int j=0;j<n;j++){
+    for(int j=0;j<m;j++){
         currCid++;
         dfs(friends[j][0]);
         if(farms[friends[j][0]]!=prefs[j] && cid[friends[j][0]]==cid[friends[j][1]]){
