@@ -1,4 +1,4 @@
-/* USACO 2019 Dec Silver COMPLETE???
+/* USACO 2019 Dec Silver COMPLETE
  * http://www.usaco.org/index.php?page=viewproblem2&cpid=968
  * 
  * idea: solve using floodfill.
