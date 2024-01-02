@@ -24,7 +24,7 @@ using ll = long long;
 int main() {
 	ios_base::sync_with_stdio(false);
     
-	ifstream cin("01.in.in");
+	ifstream cin("10.in");
 
     int ans=0;
     
