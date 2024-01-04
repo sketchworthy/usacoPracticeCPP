@@ -26,19 +26,24 @@
 using namespace std;
 using ll = long long;
 
+vector<int> pos; // pos[x] gives cow # at position x
 vector<vector<pair<int,int>>> adj; 
-// adj[x] has list of pairs containing a node x is adjacent to and the wormhole's width
+// adj[x] has list of pairs containing a position that pos x is connected to and the wormhole's width
 vector<vector<int>> wormholes;
-int threshold; // smallest wormhole size allowed
-vector<bool> visited;
+int threshold; // wormholes[threshold][2] is smallest wormhole size allowed
+// vector<vector<int>> clusters; // info on which POSITIONS are connected. doubles as visited array
+vector<int> cid; // cid[x] is cluster id of cow # x
+int id; // curr id of cluster
 
-void dfs(int node, int target){
-    // find all nodes this node can reach, if found target, stop
-    visited[node]=true;
-    if(node==target) return;
+void dfs(int p, int target){
+    // find all nodes/positions a cow at position p can reach. if get to target position, stop
+    // clusters[id].push_back(pos[p]);
+    cid[pos[p]]=id;
 
-    for(pair<int,int> adjInfo:adj[node]){
-        if(visited[adjInfo.first] || adjInfo.second<threshold)continue;
+    if(p==target) return;
+
+    for(pair<int,int> adjInfo:adj[p]){
+        if(cid[pos[adjInfo.first]]!=-1 || adjInfo.second<wormholes[threshold][2])continue;
         dfs(adjInfo.first,target);
     }
 }
@@ -46,13 +51,13 @@ void dfs(int node, int target){
 int main() {
 	ios_base::sync_with_stdio(false);
     
-	// ifstream cin("wormsort.in");
-	// ofstream cout("wormsort.out");
+	ifstream cin("wormsort.in");
+	ofstream cout("wormsort.out");
     
 	int n,m; // cows, wormholes
     cin>>n>>m;
 
-    vector<int> pos(n); // positions of n cows;
+    pos.resize(n); // pos[x] gives # cow at position x
     vector<int> idealPos(n); // end goal
     for(int j=0;j<n;j++){
         cin>>pos[j]; pos[j]--;
@@ -65,10 +70,10 @@ int main() {
     }
 
     wormholes.resize(m,vector<int>(3));
-    // wormhole info: edge endpoint 1, edge endpoint 2, width
+    // wormhole info: edge endpoint position 1, edge endpoint pos 2, width
     for(int j=0;j<m;j++){
         cin>>wormholes[j][0]>>wormholes[j][1]>>wormholes[j][2];
-        wormholes[j][0]--; wormholes[j][1]--; wormholes[j][2]--;
+        wormholes[j][0]--; wormholes[j][1]--;
     }
 
     sort(wormholes.begin(),wormholes.end(), [](vector<int>& a,vector<int>& b){ return a[2]<b[2]; }); 
@@ -80,29 +85,41 @@ int main() {
         pair<int,int> adjInfo = {wormholes[j][1],wormholes[j][2]};
         adj[wormholes[j][0]].push_back(adjInfo);
     }
-    visited.resize(n);
+    // clusters.resize(n);
+    cid.resize(n);
 
     int low = 0;
     int high=m-1;
 
     while(low<high){
         threshold=(low+high+1)/2; // only wormholes w width>=wormholes[threshold][2] allowed
+        // evaluate the clusters for each threshold and see if the threshold works
 
-        visited = {false};
-        bool allWork=true;
+        for(int j=0;j<n;j++) {// clear clusters and cid
+            // fill(clusters.begin(),clusters.end(),-1); 
+            cid[j]=-1;
+        }
+        id = -1; // curr cluster id
+
+        bool allWork=true; // bool that describes if all cows can find their desired node
         for(int j=0;j<n;j++){ 
-            // for each cow pos[j], check if they can reach position j through dfs travel
-            if(!visited[j]){
+            // for each cow at position j, check if they can reach desired position pos[j] through dfs travel
+            id++; // update id
+
+            if(cid[pos[j]]!=-1 && cid[pos[j]]==cid[pos[pos[j]]]){
+                continue; // if already know cow can reach position, skip out on dfs
+            }
+            dfs(j,pos[j]); // cow in position j has id pos[j] and wants to get to index pos[j]. see if possible
+            if(cid[pos[pos[j]]]!=id){ // if this cluster hasnt reached desired end
                 allWork=false;
                 break;
             }
-            dfs(pos[j],j);
         }
         if(allWork){
-            high = threshold;
+            low = threshold;
         }
         else{
-            low = threshold+1;
+            high = threshold-1;
         }
     }
 	
