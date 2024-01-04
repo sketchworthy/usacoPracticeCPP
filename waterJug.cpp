@@ -37,7 +37,7 @@ int main() {
         int a = min(c1,c2);
 
         int div = gcd(a,b);
-        if(t%div==0) ans++;
+        if(t%div==0 && t<=a+b) ans++;
     }
 
 	cout<<ans;
