@@ -21,6 +21,12 @@
  * paths open to me (like with millionaire madness, that duck
  * grid problem, where the ladder length dictates what edges
  * are available)
+ * 
+ * I ALSO HAD REALLY STUPID DEBUG TROUBLE BC OF 1 TINY THING.
+ * i thought that the positions of cows given (3 2 1 4)
+ * were the order the cows were currently in but nooo! they
+ * meant cow 1 was at pos 3, cow 2 was at pos 2, 3 at 1, etc.
+ * READ PROBLEM CAREFULLY.
  */
 #include <bits/stdc++.h>
 using namespace std;
@@ -59,8 +65,9 @@ int main() {
 
     pos.resize(n); // pos[x] gives # cow at position x
     vector<int> idealPos(n); // end goal
-    for(int j=0;j<n;j++){
-        cin>>pos[j]; pos[j]--;
+    for(int j=0;j<n;j++){ // j is # cow
+        int x; cin>>x; x--;
+        pos[x]=j;
         idealPos[j]=pos[j];
     }
     sort(idealPos.begin(),idealPos.end());
