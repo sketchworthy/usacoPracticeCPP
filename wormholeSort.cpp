@@ -26,7 +26,9 @@
  * i thought that the positions of cows given (3 2 1 4)
  * were the order the cows were currently in but nooo! they
  * meant cow 1 was at pos 3, cow 2 was at pos 2, 3 at 1, etc.
- * READ PROBLEM CAREFULLY.
+ * READ PROBLEM CAREFULLY. i also forgot when creating adj list
+ * to add 2 directions of bidirectional edges (i only added 1
+ * direction initially).
  */
 #include <bits/stdc++.h>
 using namespace std;
@@ -43,10 +45,9 @@ int id; // curr id of cluster
 
 void dfs(int p, int target){
     // find all nodes/positions a cow at position p can reach. if get to target position, stop
-    // clusters[id].push_back(pos[p]);
     cid[pos[p]]=id;
 
-    if(p==target) return;
+    // if(p==target) return; // don't stop if target not hit so as to not interrupt the cluster detection
 
     for(pair<int,int> adjInfo:adj[p]){
         if(cid[pos[adjInfo.first]]!=-1 || adjInfo.second<wormholes[threshold][2])continue;
@@ -90,9 +91,11 @@ int main() {
     adj.resize(n);
     for(int j=0;j<m;j++){ // add each wormhole info
         pair<int,int> adjInfo = {wormholes[j][1],wormholes[j][2]};
+        pair<int,int> adjInfo2 = {wormholes[j][0],wormholes[j][2]};
         adj[wormholes[j][0]].push_back(adjInfo);
+        adj[wormholes[j][1]].push_back(adjInfo2);
     }
-    // clusters.resize(n);
+
     cid.resize(n);
 
     int low = 0;
@@ -102,8 +105,7 @@ int main() {
         threshold=(low+high+1)/2; // only wormholes w width>=wormholes[threshold][2] allowed
         // evaluate the clusters for each threshold and see if the threshold works
 
-        for(int j=0;j<n;j++) {// clear clusters and cid
-            // fill(clusters.begin(),clusters.end(),-1); 
+        for(int j=0;j<n;j++) {// clear cid
             cid[j]=-1;
         }
         id = -1; // curr cluster id
@@ -117,6 +119,7 @@ int main() {
                 continue; // if already know cow can reach position, skip out on dfs
             }
             dfs(j,pos[j]); // cow in position j has id pos[j] and wants to get to index pos[j]. see if possible
+
             if(cid[pos[pos[j]]]!=id){ // if this cluster hasnt reached desired end
                 allWork=false;
                 break;
