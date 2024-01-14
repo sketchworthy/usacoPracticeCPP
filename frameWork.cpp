@@ -15,7 +15,6 @@ int main() {
 	ios_base::sync_with_stdio(false);
     
 	ifstream cin("x.in");
-	ofstream cout("x.out");
     
 	int n;
     cin>>n;
